@@ -1,11 +1,11 @@
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { HashRouter, Switch, Route } from "react-router-dom";
 import Home from "./Routes/Home";
 import Search from "./Routes/Search";
 import TV from "./Routes/TV";
 
 function App() {
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL + "/"}>
+    <HashRouter>
       <Switch>
         <Route path="/tv">
           <TV />
@@ -17,7 +17,7 @@ function App() {
           <Home />
         </Route>
       </Switch>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
