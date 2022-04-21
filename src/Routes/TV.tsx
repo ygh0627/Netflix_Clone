@@ -207,6 +207,7 @@ function TV() {
   const overlayClicked = () => {
     history.goBack();
   };
+
   const modalTvInfo =
     isTvClicked &&
     data?.results.find((tv) => tv.id === +isTvClicked.params.tvId);
@@ -282,30 +283,31 @@ function TV() {
               </Row>
             </AnimatePresence>
           </Slider>
-
-          {isTvClicked ? (
-            <AnimatePresence>
-              <Overlay
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={overlayClicked}
-              />
-              <TvModalWrapper
-                style={{ top: scrollY.get() + 100 }}
-                layoutId={isTvClicked.params.tvId}
-              >
-                <TvModalImg
-                  img={makeImage(modalTvInfo?.backdrop_path || "", "w500")}
+          <AnimatePresence>
+            {isTvClicked && (
+              <>
+                <Overlay
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={overlayClicked}
                 />
-                <TvModalTitle>{modalTvInfo?.name}</TvModalTitle>
-                <TvModalInfo>{`First air date : ${modalTvInfo?.first_air_date}`}</TvModalInfo>
-                <TvModalInfo style={{ fontWeight: 700 }}>
-                  {`Rating : ⭐ ${modalTvInfo?.vote_average}`}
-                </TvModalInfo>
-                <TvModalDesc>{modalTvInfo?.overview}</TvModalDesc>
-              </TvModalWrapper>
-            </AnimatePresence>
-          ) : null}
+                <TvModalWrapper
+                  style={{ top: scrollY.get() + 100 }}
+                  layoutId={isTvClicked.params.tvId}
+                >
+                  <TvModalImg
+                    img={makeImage(modalTvInfo?.backdrop_path || "", "w500")}
+                  />
+                  <TvModalTitle>{modalTvInfo?.name}</TvModalTitle>
+                  <TvModalInfo>{`First air date : ${modalTvInfo?.first_air_date}`}</TvModalInfo>
+                  <TvModalInfo style={{ fontWeight: 700 }}>
+                    {`Rating : ⭐ ${modalTvInfo?.vote_average}`}
+                  </TvModalInfo>
+                  <TvModalDesc>{modalTvInfo?.overview}</TvModalDesc>
+                </TvModalWrapper>
+              </>
+            )}
+          </AnimatePresence>
         </>
       )}
     </Wrapper>

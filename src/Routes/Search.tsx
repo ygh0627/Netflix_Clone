@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { getSearch, IGetSearchResult } from "../api";
 import SearchHeader from "../Components/SearchHeader";
@@ -102,8 +102,9 @@ const item = {
 function Search() {
   const location = useLocation();
   const keyword = new URLSearchParams(location.search).get("keyword");
-  const { isLoading, data } = useQuery<IGetSearchResult>("search", () =>
-    getSearch(keyword + "")
+  const { isLoading, data: searchData } = useQuery<IGetSearchResult>(
+    "search",
+    () => getSearch(keyword + "")
   );
 
   return (
@@ -113,7 +114,7 @@ function Search() {
         <Loader>Loading...</Loader>
       ) : (
         <>
-          {data?.total_results === 0 ? (
+          {searchData?.total_results === 0 ? (
             <Alert>There are no matching Datas</Alert>
           ) : (
             <>
@@ -124,7 +125,7 @@ function Search() {
                   initial="hidden"
                   animate="visible"
                 >
-                  {data?.results.map((info, index) => {
+                  {searchData?.results.map((info, index) => {
                     return (
                       <Box
                         variants={item}

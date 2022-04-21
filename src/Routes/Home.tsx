@@ -258,7 +258,7 @@ function Home() {
   };
 
   const onOverlayClicked = () => {
-    history.goBack();
+    history.push("/");
   };
 
   return (
