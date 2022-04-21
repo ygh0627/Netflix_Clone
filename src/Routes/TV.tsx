@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { getTVs, IGetTvsResult } from "../api";
 import { makeImage } from "../utils";
 import TypeIt from "typeit-react";
+import Header from "../Components/Header";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -125,6 +126,8 @@ const TvModalDesc = styled.p`
   text-align: center;
   font-weight: 400;
   margin-top: 10px;
+  padding: 0px 10px;
+  margin-bottom: 15px;
 `;
 
 const boxVariants = {
@@ -167,6 +170,10 @@ export const RightArrow = styled(motion.span)`
   cursor: pointer;
 `;
 
+const TvModalInfo = styled.div`
+  text-align: center;
+`;
+
 function TV() {
   const { data, isLoading } = useQuery<IGetTvsResult>(["Tvs", "OnAir"], getTVs);
   const [index, setIndex] = useState(0);
@@ -206,6 +213,7 @@ function TV() {
 
   return (
     <Wrapper>
+      <Header />
       {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
@@ -290,6 +298,10 @@ function TV() {
                   img={makeImage(modalTvInfo?.backdrop_path || "", "w500")}
                 />
                 <TvModalTitle>{modalTvInfo?.name}</TvModalTitle>
+                <TvModalInfo>{`First air date : ${modalTvInfo?.first_air_date}`}</TvModalInfo>
+                <TvModalInfo style={{ fontWeight: 700 }}>
+                  {`Rating : ⭐ ${modalTvInfo?.vote_average}`}
+                </TvModalInfo>
                 <TvModalDesc>{modalTvInfo?.overview}</TvModalDesc>
               </TvModalWrapper>
             </AnimatePresence>

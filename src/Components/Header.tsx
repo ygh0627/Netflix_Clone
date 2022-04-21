@@ -4,7 +4,7 @@ import { motion, useAnimation, useViewportScroll } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-const Nav = styled(motion.nav)`
+export const Nav = styled(motion.nav)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,12 +16,12 @@ const Nav = styled(motion.nav)`
   color: white;
 `;
 
-const Col = styled.div`
+export const Col = styled.div`
   display: flex;
   align-items: center;
 `;
 
-const Logo = styled(motion.svg)`
+export const Logo = styled(motion.svg)`
   width: 120px;
   height: 30px;
   margin-right: 20px;
@@ -63,7 +63,7 @@ const Circle = styled(motion.span)`
   margin: 0 auto;
 `;
 
-const logoVars = {
+export const logoVars = {
   start: { pathLength: 0, fill: "rgba(255, 255, 255, 0)" },
   end: {
     fill: "rgba(255, 0, 0, 1)",

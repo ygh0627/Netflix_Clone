@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { LeftArrow, RightArrow } from "./TV";
 import TypeIt from "typeit-react";
+import Header from "../Components/Header";
 
 const Wrapper = styled.div``;
 
@@ -136,6 +137,7 @@ const ModalDesc = styled.p`
   text-align: center;
   font-weight: 400;
   margin-top: 10px;
+  padding: 0px 10px;
 `;
 
 const offSet = 6;
@@ -163,6 +165,11 @@ const boxVariants = {
     },
   },
 };
+const MovieModalInfo = styled.div`
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 5px;
+`;
 
 function Home() {
   const { data, isLoading } = useQuery<IGetMoviesResult>(
@@ -256,6 +263,7 @@ function Home() {
 
   return (
     <Wrapper>
+      <Header />
       {isLoading && isLoading_pop && ucmMovLoad ? (
         <Loader>Loading...</Loader>
       ) : (
@@ -457,8 +465,9 @@ function Home() {
                         }}
                       ></ModalImage>
                       <ModalTitle>{clickedNowMovie.title}</ModalTitle>
+                      <MovieModalInfo>{`Ratings : ⭐ ${clickedNowMovie.vote_average}`}</MovieModalInfo>
                       <h3 style={{ textAlign: "center" }}>
-                        Release Date : {clickedNowMovie.release_date}
+                        Released Date : {clickedNowMovie.release_date}
                       </h3>
                       <ModalDesc>{clickedNowMovie.overview}</ModalDesc>
                     </>
