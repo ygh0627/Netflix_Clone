@@ -1,11 +1,6 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import {
-  getMovies,
-  getPopularMovies,
-  getUpcomingMovies,
-  IGetMoviesResult,
-} from "../api";
+import { getMovies, getUpcomingMovies, IGetMoviesResult } from "../api";
 import { makeImage } from "../utils";
 import { motion, AnimatePresence, useViewportScroll } from "framer-motion";
 import { useState } from "react";
@@ -50,14 +45,9 @@ const NowPlayingSlider = styled.div`
   top: -150px;
 `;
 
-const PopMovSlider = styled.div`
-  position: relative;
-  top: 100px;
-`;
-
 const UcmMovSlider = styled.div`
   position: relative;
-  top: 350px;
+  top: 100px;
 `;
 
 const Row = styled(motion.div)`
@@ -76,6 +66,7 @@ const Box = styled(motion.div)<{ bgphoto: string }>`
   background-image: url(${(props) => props.bgphoto});
   background-size: cover;
   background-position: center center;
+  cursor: pointer;
   &:first-child {
     transform-origin: center left;
   }
@@ -98,13 +89,14 @@ const Info = styled(motion.div)`
   }
 `;
 
-const Overlay = styled(motion.div)`
+export const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   opacity: 0;
+  z-index: 50;
 `;
 
 const Bigmovie = styled(motion.div)`
@@ -117,23 +109,24 @@ const Bigmovie = styled(motion.div)`
   margin: 0 auto;
   border-radius: 20px;
   overflow: hidden;
+  z-index: 51;
 `;
 
-const ModalTitle = styled.h2`
+export const ModalTitle = styled.h2`
   font-size: 24px;
   text-align: center;
   font-weight: 700;
   margin-top: 10px;
 `;
 
-const ModalImage = styled.div`
+export const ModalImage = styled.div`
   width: 100%;
   height: 300px;
   background-size: cover;
   background-position: center center;
 `;
 
-const ModalDesc = styled.p`
+export const ModalDesc = styled.p`
   text-align: center;
   font-weight: 400;
   margin-top: 10px;
@@ -165,7 +158,7 @@ const boxVariants = {
     },
   },
 };
-const MovieModalInfo = styled.div`
+export const MovieModalInfo = styled.div`
   text-align: center;
   font-weight: 600;
   margin-bottom: 5px;
@@ -177,9 +170,6 @@ function Home() {
     getMovies
   );
 
-  const { data: data_pop, isLoading: isLoading_pop } =
-    useQuery<IGetMoviesResult>(["movies", "popularMovies"], getPopularMovies);
-
   const { data: data_ucm, isLoading: ucmMovLoad } = useQuery<IGetMoviesResult>(
     ["movies", "upcomingMovies"],
     getUpcomingMovies
@@ -189,7 +179,6 @@ function Home() {
   const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
   const { scrollY } = useViewportScroll();
   const [index, setIndex] = useState(0);
-  const [popIndex, setPopIndex] = useState(0);
   const [ucmIndex, setUcmIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [direction, setDirection] = useState(false);
@@ -199,10 +188,15 @@ function Home() {
     data?.results.find(
       (movie) => movie.id + "" === bigMovieMatch?.params.movieId
     );
+  const clickedUcmMovie =
+    bigMovieMatch?.params.movieId &&
+    data_ucm?.results.find(
+      (movie) => movie.id + "" === bigMovieMatch?.params.movieId
+    );
 
   const increaseIndex = () => {
     const maxIndex = 3;
-    if (data && data_pop) {
+    if (data && data_ucm) {
       if (leaving) return;
       setDirection(true);
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -218,26 +212,9 @@ function Home() {
     setLeaving((cur) => !cur);
   };
 
-  const increasePoPIndex = () => {
-    const maxIndex = 3;
-    if (data && data_pop) {
-      if (leaving) return;
-      setDirection(true);
-      setPopIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
-      setLeaving((cur) => !cur);
-    }
-  };
-
-  const decreasePoPIndex = () => {
-    const minIndex = 0;
-    if (leaving) return;
-    setDirection(false);
-    setPopIndex((cur) => (minIndex === cur ? 3 : cur - 1));
-    setLeaving((cur) => !cur);
-  };
   const increaseUcmIndex = () => {
     const maxIndex = 3;
-    if (data && data_pop) {
+    if (data && data_ucm) {
       if (leaving) return;
       setDirection(true);
       setUcmIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -264,7 +241,7 @@ function Home() {
   return (
     <Wrapper>
       <Header />
-      {isLoading && isLoading_pop && ucmMovLoad ? (
+      {isLoading && ucmMovLoad ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -274,6 +251,7 @@ function Home() {
             </TypeIt>
             <Overview>{data?.results[0].overview}</Overview>
           </Banner>
+
           <NowPlayingSlider>
             <h2
               style={{
@@ -285,7 +263,6 @@ function Home() {
             >
               Now_Playing
             </h2>
-
             <AnimatePresence
               initial={false}
               onExitComplete={() => setLeaving((cur) => !cur)}
@@ -333,60 +310,6 @@ function Home() {
             </AnimatePresence>
           </NowPlayingSlider>
 
-          <PopMovSlider>
-            <h2
-              style={{
-                fontSize: "24px",
-                paddingLeft: "15px",
-                fontWeight: "700",
-                marginBottom: "15px",
-              }}
-            >
-              Popular Movies
-            </h2>
-            <AnimatePresence
-              initial={false}
-              onExitComplete={() => setLeaving((cur) => !cur)}
-            >
-              <Row
-                key={popIndex}
-                initial={{
-                  x: direction ? window.outerWidth : -window.outerWidth,
-                }}
-                animate={{ x: 0 }}
-                exit={{
-                  x: direction ? -window.outerWidth : window.outerWidth,
-                }}
-                transition={{ type: "tween", duration: 1 }}
-              >
-                <LeftArrow
-                  whileHover={{ scale: 1.4 }}
-                  onClick={decreasePoPIndex}
-                >{`<`}</LeftArrow>
-                <RightArrow
-                  whileHover={{ scale: 1.4 }}
-                  onClick={increasePoPIndex}
-                >{`>`}</RightArrow>
-                {data_pop?.results
-                  .slice(offSet * popIndex, offSet * popIndex + offSet)
-                  .map((movie) => (
-                    <Box
-                      transition={{ type: "tween" }}
-                      variants={boxVariants}
-                      initial="initial"
-                      whileHover="hover"
-                      key={movie.id}
-                      bgphoto={makeImage(movie.backdrop_path, "w500")}
-                    >
-                      <Info variants={infoVariants}>
-                        <h4>{movie.title}</h4>
-                      </Info>
-                    </Box>
-                  ))}
-              </Row>
-            </AnimatePresence>
-          </PopMovSlider>
-
           <UcmMovSlider>
             <AnimatePresence
               initial={false}
@@ -425,6 +348,8 @@ function Home() {
                   .slice(ucmIndex * offSet, ucmIndex * offSet + offSet)
                   .map((movie) => (
                     <Box
+                      layoutId={movie.id + ""}
+                      onClick={() => onBoxClicked(movie.id)}
                       transition={{ type: "tween" }}
                       variants={boxVariants}
                       initial="initial"
@@ -470,6 +395,24 @@ function Home() {
                         Released Date : {clickedNowMovie.release_date}
                       </h3>
                       <ModalDesc>{clickedNowMovie.overview}</ModalDesc>
+                    </>
+                  )}
+                  {clickedUcmMovie && (
+                    <>
+                      <ModalImage
+                        style={{
+                          backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImage(
+                            clickedUcmMovie.backdrop_path,
+                            "w500"
+                          )})`,
+                        }}
+                      ></ModalImage>
+                      <ModalTitle>{clickedUcmMovie.title}</ModalTitle>
+                      <MovieModalInfo>{`Ratings : ⭐ ${clickedUcmMovie.vote_average}`}</MovieModalInfo>
+                      <h3 style={{ textAlign: "center" }}>
+                        Released Date : {clickedUcmMovie.release_date}
+                      </h3>
+                      <ModalDesc>{clickedUcmMovie.overview}</ModalDesc>
                     </>
                   )}
                 </Bigmovie>

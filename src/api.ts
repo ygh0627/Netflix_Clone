@@ -40,6 +40,7 @@ export interface IGetTvsResult {
 }
 
 interface ISearch {
+  original_name: string;
   backdrop_path: string;
   id: number;
   original_title: string;
@@ -48,6 +49,8 @@ interface ISearch {
   vote_average: number;
   media_type: string;
   name: string;
+  overview: string;
+  release_date: string;
 }
 
 export interface IGetSearchResult {

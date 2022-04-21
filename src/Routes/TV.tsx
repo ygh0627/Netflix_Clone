@@ -117,14 +117,15 @@ const TvModalImg = styled.div<{ img: string }>`
 
 const TvModalTitle = styled.h2`
   text-align: center;
-  margin-top: 10px;
+  margin: 10px 0px;
   color: ${(props) => props.theme.white.darker};
   font-size: 28px;
+  font-weight: 600;
 `;
 
 const TvModalDesc = styled.p`
   text-align: center;
-  font-weight: 400;
+  font-weight: 500;
   margin-top: 10px;
   padding: 0px 10px;
   margin-bottom: 15px;
@@ -172,6 +173,8 @@ export const RightArrow = styled(motion.span)`
 
 const TvModalInfo = styled.div`
   text-align: center;
+  font-weight: 600;
+  margin-bottom: 10px;
 `;
 
 function TV() {

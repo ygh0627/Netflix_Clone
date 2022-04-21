@@ -15,7 +15,7 @@ const GoHome = styled.span`
 function SearchHeader() {
   return (
     <Nav
-      style={{ zIndex: 99 }}
+      style={{ zIndex: 47 }}
       initial={{ backgroundColor: "rgba(0,0,0,0.2)" }}
     >
       <Col>
