@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { getMovies, getUpcomingMovies, IGetMoviesResult } from "../api";
+import { getMovies, getTopMovies, IGetMoviesResult } from "../api";
 import { makeImage } from "../utils";
 import { motion, AnimatePresence, useViewportScroll } from "framer-motion";
 import { useState } from "react";
@@ -47,7 +47,7 @@ const NowPlayingSlider = styled.div`
 
 const UcmMovSlider = styled.div`
   position: relative;
-  top: 100px;
+  top: 90px;
 `;
 
 const Row = styled(motion.div)`
@@ -170,16 +170,16 @@ function Home() {
     getMovies
   );
 
-  const { data: data_ucm, isLoading: ucmMovLoad } = useQuery<IGetMoviesResult>(
-    ["movies", "upcomingMovies"],
-    getUpcomingMovies
+  const { data: data_top, isLoading: topMovLoad } = useQuery<IGetMoviesResult>(
+    ["movies", "topMovies"],
+    getTopMovies
   );
 
   const history = useHistory();
   const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
   const { scrollY } = useViewportScroll();
   const [index, setIndex] = useState(0);
-  const [ucmIndex, setUcmIndex] = useState(0);
+  const [topIndex, setTopIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [direction, setDirection] = useState(false);
 
@@ -188,15 +188,15 @@ function Home() {
     data?.results.find(
       (movie) => movie.id + "" === bigMovieMatch?.params.movieId
     );
-  const clickedUcmMovie =
+  const clickedTopMovie =
     bigMovieMatch?.params.movieId &&
-    data_ucm?.results.find(
+    data_top?.results.find(
       (movie) => movie.id + "" === bigMovieMatch?.params.movieId
     );
 
   const increaseIndex = () => {
     const maxIndex = 3;
-    if (data && data_ucm) {
+    if (data && data_top) {
       if (leaving) return;
       setDirection(true);
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -214,10 +214,10 @@ function Home() {
 
   const increaseUcmIndex = () => {
     const maxIndex = 3;
-    if (data && data_ucm) {
+    if (data && data_top) {
       if (leaving) return;
       setDirection(true);
-      setUcmIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+      setTopIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
       setLeaving((cur) => !cur);
     }
   };
@@ -226,7 +226,7 @@ function Home() {
     const minIndex = 0;
     if (leaving) return;
     setDirection(false);
-    setUcmIndex((cur) => (minIndex === cur ? 3 : cur - 1));
+    setTopIndex((cur) => (minIndex === cur ? 3 : cur - 1));
     setLeaving((cur) => !cur);
   };
 
@@ -241,7 +241,7 @@ function Home() {
   return (
     <Wrapper>
       <Header />
-      {isLoading && ucmMovLoad ? (
+      {isLoading && topMovLoad ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -261,7 +261,7 @@ function Home() {
                 marginBottom: "15px",
               }}
             >
-              Now_Playing
+              NowPlaying
             </h2>
             <AnimatePresence
               initial={false}
@@ -323,10 +323,10 @@ function Home() {
                   marginBottom: "15px",
                 }}
               >
-                Upcoming Movies
+                Top Rated Movies
               </h2>
               <Row
-                key={ucmIndex}
+                key={topIndex}
                 initial={{
                   x: direction ? window.outerWidth : -window.outerWidth,
                 }}
@@ -344,8 +344,8 @@ function Home() {
                   whileHover={{ scale: 1.4 }}
                   onClick={increaseUcmIndex}
                 >{`>`}</RightArrow>
-                {data_ucm?.results
-                  .slice(ucmIndex * offSet, ucmIndex * offSet + offSet)
+                {data_top?.results
+                  .slice(topIndex * offSet, topIndex * offSet + offSet)
                   .map((movie) => (
                     <Box
                       layoutId={movie.id + ""}
@@ -397,22 +397,22 @@ function Home() {
                       <ModalDesc>{clickedNowMovie.overview}</ModalDesc>
                     </>
                   )}
-                  {clickedUcmMovie && (
+                  {clickedTopMovie && (
                     <>
                       <ModalImage
                         style={{
                           backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImage(
-                            clickedUcmMovie.backdrop_path,
+                            clickedTopMovie.backdrop_path,
                             "w500"
                           )})`,
                         }}
                       ></ModalImage>
-                      <ModalTitle>{clickedUcmMovie.title}</ModalTitle>
-                      <MovieModalInfo>{`Ratings : ⭐ ${clickedUcmMovie.vote_average}`}</MovieModalInfo>
+                      <ModalTitle>{clickedTopMovie.title}</ModalTitle>
+                      <MovieModalInfo>{`Ratings : ⭐ ${clickedTopMovie.vote_average}`}</MovieModalInfo>
                       <h3 style={{ textAlign: "center" }}>
-                        Released Date : {clickedUcmMovie.release_date}
+                        Released Date : {clickedTopMovie.release_date}
                       </h3>
-                      <ModalDesc>{clickedUcmMovie.overview}</ModalDesc>
+                      <ModalDesc>{clickedTopMovie.overview}</ModalDesc>
                     </>
                   )}
                 </Bigmovie>
